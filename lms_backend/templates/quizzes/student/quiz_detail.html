@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load quiz_filters %}
+
+{% block title %}Quiz Results - {{ submission.quiz_lecture.lecture.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Quiz Results</h1>
+            <h4 class="text-muted">{{ submission.quiz_lecture.lecture.title }}</h4>
+            <p class="text-muted">Course: {{ submission.quiz_lecture.lecture.course.title }}</p>
+        </div>
+        <div>
+            <a href="{% url 'student_quiz_grades' %}" class="btn btn-secondary">Back to Grades</a>
+        </div>
+    </div>
+
+    <!-- Quiz Summary -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Quiz Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Submitted:</strong><br>
+                    <span class="text-muted">{{ submission.submitted_at|date:"M d, Y H:i" }}</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Questions:</strong><br>
+                    <span class="text-muted">{{ answers.count }}</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Status:</strong><br>
+                    {% if grade %}
+                        <span class="badge bg-success">Graded</span>
+                    {% else %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    {% if grade %}
+                        <strong>Grade:</strong><br>
+                        <span class="h4 text-primary">{{ grade.score }}/100</span>
+                    {% else %}
+                        <strong>Grade:</strong><br>
+                        <span class="text-muted">Not graded yet</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Results -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Your Answers</h5>
+        </div>
+        <div class="card-body">
+            {% for answer in answers %}
+                <div class="mb-4 p-3 border rounded">
+                    <h6 class="mb-3">Question {{ forloop.counter }}: {{ answer.question.text }}</h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Your Answer:</strong><br>
+                            <span class="{% if answer.selected_option_index == answer.question.correct_index %}text-success{% else %}text-danger{% endif %}">
+                                {{ answer.question.options|get_item:answer.selected_option_index }}
+                            </span>
+                            {% if answer.selected_option_index == answer.question.correct_index %}
+                                <i class="fas fa-check text-success ms-2"></i>
+                            {% else %}
+                                <i class="fas fa-times text-danger ms-2"></i>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Correct Answer:</strong><br>
+                            <span class="text-success">{{ answer.question.options|get_item:answer.question.correct_index }}</span>
+                            <i class="fas fa-check text-success ms-2"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <strong>All Options:</strong>
+                        <ul class="list-unstyled mt-1">
+                            {% for option in answer.question.options %}
+                                <li class="{% if forloop.counter0 == answer.question.correct_index %}text-success{% elif forloop.counter0 == answer.selected_option_index and answer.selected_option_index != answer.question.correct_index %}text-danger{% endif %}">
+                                    {{ forloop.counter }}. {{ option }}
+                                    {% if forloop.counter0 == answer.question.correct_index %}
+                                        <i class="fas fa-check text-success ms-2"></i>
+                                    {% elif forloop.counter0 == answer.selected_option_index and answer.selected_option_index != answer.question.correct_index %}
+                                        <i class="fas fa-times text-danger ms-2"></i>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if grade %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Grade Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Graded by:</strong> {{ grade.teacher.username }}<br>
+                        <strong>Graded on:</strong> {{ grade.graded_at|date:"M d, Y H:i" }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Score:</strong> {{ grade.score }}/100<br>
+                        <strong>Percentage:</strong> {{ grade.score }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

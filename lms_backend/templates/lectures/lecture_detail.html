@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ lecture.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">{{ lecture.title }} <small class="text-muted">({{ lecture.course.title }})</small></h1>
+    <a href="{% url 'course-detail-public' pk=course.pk %}" class="btn btn-secondary mb-3">Back to Course</a>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+                {% endif %}
+
+    {% if lecture.type == 'READING' or lecture.type == 'PDF' %}
+        {% if reading_lecture.file %}
+            <div class="mb-4">
+                <h3>Lecture Document</h3>
+                <iframe src="{{ reading_lecture.file.url }}#toolbar=0" width="100%" height="600px" style="border: none;"></iframe>
+                <p><a href="{{ reading_lecture.file.url }}" target="_blank" class="btn btn-info">Download PDF</a></p>
+            </div>
+        {% elif reading_lecture.content_url %}
+                    <div class="mb-4">
+                <h3>Lecture Content</h3>
+                <iframe src="{{ reading_lecture.content_url }}" width="100%" height="600px" style="border: none;"></iframe>
+                            </div>
+                        {% else %}
+            <div class="alert alert-warning" role="alert">
+                No content available for this lecture.
+                    </div>
+                {% endif %}
+    {% elif lecture.type == 'VIDEO' %}
+                    <div class="mb-4">
+            <h3>Lecture Video</h3>
+            {% if reading_lecture.content_url %}
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="{{ reading_lecture.content_url }}" allowfullscreen></iframe>
+                                </div>
+                            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    No video available for this lecture.
+                                </div>
+                            {% endif %}
+                        </div>
+    {% elif lecture.type == 'QUIZ' %}
+        <div class="mb-4">
+            <h3>{{ quiz_lecture.lecture.title }}</h3>
+            {% if quiz_form %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ quiz_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit Quiz</button>
+                </form>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    Quiz details will be displayed here.
+                </div>
+            {% endif %}
+                    </div>
+                {% endif %}
+
+    {% if not is_completed %}
+        <form method="post" action="{% url 'mark_lecture_as_done' lecture.pk %}" class="mt-4">
+                    {% csrf_token %}
+            <button type="submit" class="btn btn-success">Mark as Done</button>
+        </form>
+                    {% else %}
+        <div class="alert alert-success mt-4" role="alert">
+            This lecture is completed!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load quiz_filters %}
+
+{% block title %}Grade Submission{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Grade Submission for {{ submission.student.username }}</h1>
+    <h2 class="mb-3">Quiz: {{ submission.quiz_lecture.lecture.title }}</h2>
+    <a href="{% url 'quiz_submissions_list' lecture_pk=submission.quiz_lecture.lecture.pk %}" class="btn btn-secondary mb-3">Back to Submissions</a>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Student Answers</h4>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for answer in answers %}
+                <li class="list-group-item">
+                    <strong>Question:</strong> {{ answer.question.text }}<br>
+                    <strong>Student's Answer:</strong> {{ answer.question.options|get_item:answer.selected_option_index }}<br>
+                    <strong>Correct Answer:</strong> {{ answer.question.options|get_item:answer.question.correct_index }}<br>
+                    <strong>Status:</strong> 
+                    {% if answer.selected_option_index == answer.question.correct_index %}
+                        <span class="badge bg-success">Correct</span>
+                    {% else %}
+                        <span class="badge bg-danger">Incorrect</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Assign Grade</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Save Grade</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

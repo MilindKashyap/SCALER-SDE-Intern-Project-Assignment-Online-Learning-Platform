@@ -1,0 +1,344 @@
+/* Custom Styles */
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+}
+
+.wrapper {
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background-color: var(--surface) !important; /* Override Bootstrap default */
+    border-right: 1px solid var(--chip);
+    color: var(--text);
+    transition: transform 0.3s ease;
+}
+
+.sidebar .nav-link {
+    color: var(--text);
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--primary);
+    color: var(--surface) !important;
+}
+
+/* Fix for disabled nav links */
+.sidebar .nav-link.disabled {
+    color: var(--muted) !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.sidebar .nav-link.disabled:hover {
+    color: var(--muted) !important;
+    background-color: transparent;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    margin-left: 250px; /* Offset for the fixed sidebar */
+    transition: margin-left 0.3s ease;
+}
+
+.card {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    background-color: var(--surface);
+    color: var(--text);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: var(--surface);
+}
+
+.badge.bg-secondary {
+    background-color: var(--chip) !important;
+    color: var(--text) !important;
+}
+
+.progress-bar {
+    background-color: var(--primary);
+}
+
+/* Pastel card tints */
+.card-pink {
+    background-color: var(--card-pink) !important;
+}
+.card-yellow {
+    background-color: var(--card-yellow) !important;
+}
+.card-mint {
+    background-color: var(--card-mint) !important;
+}
+.card-lilac {
+    background-color: var(--card-lilac) !important;
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] {
+    --bg: #0E0F12;
+    --surface: #15171C;
+    --text: #F8FAFC; /* Light text for dark background */
+    --muted: #9CA3AF;
+    --primary: #5a80d5; /* A slightly softer primary for dark mode */
+    --chip: #22242A;
+
+    --card-pink:   #402C30;
+    --card-yellow: #3C3423;
+    --card-mint:   #263A33;
+    --card-lilac:  #2E2B40;
+}
+
+/* Ensure base text color is applied */
+[data-theme="dark"] body {
+    color: var(--text);
+}
+
+[data-theme="dark"] .sidebar .nav-link {
+    color: var(--text); /* Ensure all nav links are visible */
+}
+
+[data-theme="dark"] .sidebar .nav-link.active {
+    background-color: var(--primary);
+    color: var(--bg) !important; /* Ensure active link text is visible */
+}
+
+[data-theme="dark"] .sidebar .nav-link.disabled {
+    color: var(--muted) !important;
+    opacity: 0.7;
+}
+
+[data-theme="dark"] .card {
+    color: var(--text); /* Ensure card text is visible */
+}
+
+[data-theme="dark"] .btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--bg); /* Ensure button text is visible */
+}
+
+[data-theme="dark"] .btn-outline-primary {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: var(--bg);
+}
+
+[data-theme="dark"] .badge.bg-secondary {
+    background-color: var(--chip) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--muted) !important; /* Ensure muted text is visible */
+}
+
+/* Fix dropdown menu in dark mode */
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--surface);
+    border: 1px solid var(--chip);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background-color: var(--chip);
+    color: var(--text);
+}
+
+[data-theme="dark"] .dropdown-item.disabled {
+    color: var(--muted);
+    opacity: 0.6;
+}
+
+/* Fix sidebar dropdown user section */
+[data-theme="dark"] .sidebar .dropdown-toggle {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .sidebar strong {
+    color: var(--text);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    /* Mobile styles */
+    .wrapper {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        transform: translateX(-100%);
+        z-index: 1000;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    /* Mobile navigation toggle */
+    .mobile-nav-toggle {
+        display: block !important;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1001;
+        background: var(--primary);
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+    }
+    
+    /* Overlay for mobile sidebar */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    
+    .sidebar-overlay.show {
+        display: block;
+    }
+    
+    /* Adjust card layouts for mobile */
+    .row-cols-1 {
+        margin: 0;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    /* Adjust form layouts */
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    /* Adjust button sizes for mobile */
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    /* Adjust text sizes */
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Extra small devices */
+    .main-content {
+        padding: 10px;
+    }
+    
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    /* Stack buttons vertically on very small screens */
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        border-radius: 4px !important;
+        margin-bottom: 5px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Tablet styles */
+    .sidebar {
+        width: 200px;
+    }
+    
+    .main-content {
+        margin-left: 200px;
+        padding: 20px;
+    }
+    
+    /* Adjust grid for tablets */
+    .row-cols-md-2 .col {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Hide mobile nav toggle on desktop */
+.mobile-nav-toggle {
+    display: none;
+}
+
+/* Ensure proper spacing for mobile */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .d-flex.justify-content-between > * {
+        width: 100%;
+    }
+    
+    /* Adjust input groups for mobile */
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group > * {
+        border-radius: 4px !important;
+        margin-bottom: 5px;
+    }
+}

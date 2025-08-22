@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Profile</h4>
+                    <div>
+                        <a href="{% url 'profile_edit' %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-pencil me-1"></i> Edit Profile
+                        </a>
+                        <a href="{% url 'change_password' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-key me-1"></i> Change Password
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            {% if user.profile_photo %}
+                                <img src="{{ user.profile_photo.url }}" alt="Profile Photo" 
+                                     class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://www.gravatar.com/avatar/?d=mp" alt="Default Profile" 
+                                     class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
+                            {% endif %}
+                            
+                            <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                            <span class="badge bg-secondary">{{ user.get_role_display }}</span>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Username:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ user.username }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Email:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ user.email }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>First Name:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ user.first_name|default:"Not provided" }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Last Name:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ user.last_name|default:"Not provided" }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Role:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ user.get_role_display }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Member Since:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ user.created_at|date:"F j, Y" }}
+                                </div>
+                            </div>
+                            
+                            {% if user.bio %}
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>Bio:</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ user.bio }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Messages Summary -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Messages</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Unread Messages:</span>
+                                <span class="badge bg-primary">{{ unread_messages }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a href="{% url 'messages_list' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-envelope me-1"></i> View All Messages
+                            </a>
+                            <a href="{% url 'send_message' %}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-send me-1"></i> Send Message
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

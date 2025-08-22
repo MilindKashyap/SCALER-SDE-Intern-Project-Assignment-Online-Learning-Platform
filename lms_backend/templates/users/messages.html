@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Messages</h3>
+                <a href="{% url 'send_message' %}" class="btn btn-primary">
+                    <i class="bi bi-send me-1"></i> Send New Message
+                </a>
+            </div>
+            
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-4" id="messagesTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" type="button" role="tab">
+                        Received Messages ({{ received_messages.count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab">
+                        Sent Messages ({{ sent_messages.count }})
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tab Content -->
+            <div class="tab-content" id="messagesTabContent">
+                <!-- Received Messages -->
+                <div class="tab-pane fade show active" id="received" role="tabpanel">
+                    {% if received_messages %}
+                        <div class="list-group">
+                            {% for message in received_messages %}
+                                <div class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <a href="{% url 'message_detail' message.id %}" class="text-decoration-none">
+                                                    {{ message.subject }}
+                                                </a>
+                                                {% if not message.is_read %}
+                                                    <span class="badge bg-primary ms-2">New</span>
+                                                {% endif %}
+                                            </h6>
+                                            <p class="mb-1 text-muted">From: {{ message.sender.get_full_name|default:message.sender.username }}</p>
+                                            <small class="text-muted">{{ message.created_at|date:"M j, Y g:i A" }}</small>
+                                        </div>
+                                        <div class="ms-3">
+                                            <a href="{% url 'message_detail' message.id %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye me-1"></i> View
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <h5 class="mt-3">No received messages</h5>
+                            <p class="text-muted">You haven't received any messages yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Sent Messages -->
+                <div class="tab-pane fade" id="sent" role="tabpanel">
+                    {% if sent_messages %}
+                        <div class="list-group">
+                            {% for message in sent_messages %}
+                                <div class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <a href="{% url 'message_detail' message.id %}" class="text-decoration-none">
+                                                    {{ message.subject }}
+                                                </a>
+                                            </h6>
+                                            <p class="mb-1 text-muted">To: {{ message.receiver.get_full_name|default:message.receiver.username }}</p>
+                                            <small class="text-muted">{{ message.created_at|date:"M j, Y g:i A" }}</small>
+                                        </div>
+                                        <div class="ms-3">
+                                            <a href="{% url 'message_detail' message.id %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye me-1"></i> View
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-send display-1 text-muted"></i>
+                            <h5 class="mt-3">No sent messages</h5>
+                            <p class="text-muted">You haven't sent any messages yet.</p>
+                            <a href="{% url 'send_message' %}" class="btn btn-primary">
+                                <i class="bi bi-send me-1"></i> Send Your First Message
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

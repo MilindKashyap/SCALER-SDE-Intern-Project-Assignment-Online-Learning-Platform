@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Lecture: {{ lecture.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Edit Lecture: {{ lecture.title }}</h1>
+
+    <!-- Lecture Details Card -->
+    <div class="card p-4 mb-4">
+        <h2 class="card-title mb-4">Edit Lecture Details</h2>
+        <form method="post" enctype="multipart/form-data" id="lecture-edit-form">
+            {% csrf_token %}
+            <div id="lecture-base-fields">
+                {{ lecture_form|crispy }}
+            </div>
+
+            <div id="reading-lecture-fields" {% if lecture.type == 'READING' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                {{ reading_lecture_form.content_text|crispy }}
+            </div>
+
+            <div id="video-lecture-fields" {% if lecture.type == 'VIDEO' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                {{ reading_lecture_form.content_url|crispy }} {# For embedding video URLs #}
+                {{ reading_lecture_form.file|crispy }} {# For direct video file uploads #}
+            </div>
+
+            <div id="pdf-lecture-fields" {% if lecture.type == 'PDF' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                {{ reading_lecture_form.file|crispy }} {# For PDF file uploads #}
+            </div>
+
+            <div id="quiz-questions-form" {% if lecture.type == 'QUIZ' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                <h5 class="mt-4">Quiz Questions</h5>
+                {{ question_formset.management_form }}
+                {% for form in question_formset %}
+                    <div class="question-item border p-3 mb-2 rounded">
+                        {{ form|crispy }}
+                        {% if form.instance.pk %}
+                            <button type="button" class="btn btn-danger btn-sm mt-2 delete-question-btn" data-question-id="{{ form.instance.pk }}">Delete Question</button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="button" class="btn btn-secondary btn-sm mt-2" id="add-question">Add Another Question</button>
+            </div>
+            <button type="submit" name="lecture_form" class="btn btn-primary mt-3">Update Lecture</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lectureTypeSelect = document.getElementById('id_type');
+        const readingLectureFields = document.getElementById('reading-lecture-fields');
+        const videoLectureFields = document.getElementById('video-lecture-fields');
+        const pdfLectureFields = document.getElementById('pdf-lecture-fields');
+        const quizQuestionsForm = document.getElementById('quiz-questions-form');
+        const addQuestionBtn = document.getElementById('add-question');
+        const totalForms = document.getElementById('id_question-TOTAL_FORMS');
+
+        function toggleLectureContentForms() {
+            // Hide all content-specific forms first
+            readingLectureFields.style.display = 'none';
+            videoLectureFields.style.display = 'none';
+            pdfLectureFields.style.display = 'none';
+            quizQuestionsForm.style.display = 'none';
+
+            // Show forms based on selected lecture type
+            switch (lectureTypeSelect.value) {
+                case 'READING':
+                    readingLectureFields.style.display = 'block';
+                    break;
+                case 'VIDEO':
+                    videoLectureFields.style.display = 'block';
+                    break;
+                case 'PDF':
+                    pdfLectureFields.style.display = 'block';
+                    break;
+                case 'QUIZ':
+                    quizQuestionsForm.style.display = 'block';
+                    break;
+            }
+        }
+
+        toggleLectureContentForms(); // Call on page load
+        lectureTypeSelect.addEventListener('change', toggleLectureContentForms);
+
+        const formTemplate = `
+            <div class="question-item border p-3 mb-2 rounded">
+                <p>Question #<span class="question-num">__prefix__</span></p>
+                <div class="mb-3">
+                    <label for="id_question-__prefix__-text" class="form-label">Text:</label>
+                    <textarea name="question-__prefix__-text" cols="40" rows="3" class="form-control" id="id_question-__prefix__-text"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="id_question-__prefix__-options" class="form-label">Options:</label>
+                    <textarea name="question-__prefix__-options" cols="40" rows="4" class="form-control" placeholder="Enter options, one per line" id="id_question-__prefix__-options"></textarea>
+                    <div class="form-text">Enter each option on a new line.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_question-__prefix__-correct_index" class="form-label">Correct index:</label>
+                    <input type="number" name="question-__prefix__-correct_index" class="form-control" id="id_question-__prefix__-correct_index">
+                </div>
+                <button type="button" class="btn btn-danger btn-sm mt-2 remove-question">Remove</button>
+            </div>
+        `;
+
+        addQuestionBtn.addEventListener('click', function() {
+            const currentTotalForms = parseInt(totalForms.value);
+            const newForm = formTemplate.replace(/__prefix__/g, currentTotalForms);
+            const formsetContainer = document.querySelector('#quiz-questions-form');
+            formsetContainer.insertAdjacentHTML('beforeend', newForm);
+            totalForms.value = currentTotalForms + 1;
+        });
+
+        // Handle initial forms deletion and new form deletion
+        document.getElementById('quiz-questions-form').addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete-question-btn')) {
+                const questionId = event.target.dataset.questionId;
+                // In a real application, you'd send an AJAX request to delete the question
+                // For now, we'll just hide it and mark for deletion if it's an existing question
+                const questionItem = event.target.closest('.question-item');
+                if (questionId) {
+                    const deleteInput = document.createElement('input');
+                    deleteInput.type = 'hidden';
+                    deleteInput.name = `question-${questionItem.dataset.formsetIndex}-DELETE`;
+                    deleteInput.value = 'on';
+                    questionItem.appendChild(deleteInput);
+                }
+                questionItem.remove();
+            } else if (event.target.classList.contains('remove-question')) {
+                event.target.closest('.question-item').remove();
+            }
+        });
+
+        // Set formset index for existing questions
+        document.querySelectorAll('#quiz-questions-form .question-item').forEach((item, index) => {
+            item.dataset.formsetIndex = index;
+        });
+    });
+</script>
+{% endblock %}

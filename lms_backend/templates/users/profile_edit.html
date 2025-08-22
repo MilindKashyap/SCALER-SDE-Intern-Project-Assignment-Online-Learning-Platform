@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Edit Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="mb-3">
+                                    {% if user.profile_photo %}
+                                        <img src="{{ user.profile_photo.url }}" alt="Current Profile Photo" 
+                                             class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="https://www.gravatar.com/avatar/?d=mp" alt="Default Profile" 
+                                             class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form.profile_photo.id_for_label }}" class="form-label">Profile Photo</label>
+                                    {{ form.profile_photo }}
+                                    {% if form.profile_photo.errors %}
+                                        <div class="text-danger">
+                                            {{ form.profile_photo.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Upload a new profile photo (JPG, PNG, GIF)</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                                        {{ form.first_name }}
+                                        {% if form.first_name.errors %}
+                                            <div class="text-danger">
+                                                {{ form.first_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                                        {{ form.last_name }}
+                                        {% if form.last_name.errors %}
+                                            <div class="text-danger">
+                                                {{ form.last_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger">
+                                            {{ form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.bio.id_for_label }}" class="form-label">Bio</label>
+                                    {{ form.bio }}
+                                    {% if form.bio.errors %}
+                                        <div class="text-danger">
+                                            {{ form.bio.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Tell us about yourself (optional)</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'profile_view' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Profile
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
