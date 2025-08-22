@@ -3,6 +3,23 @@ Mini LMS is a simple learning platform where teachers upload lectures &amp; quiz
 
 🎓 Mini LMS - Online Learning Platform 
 
+learning-management-system/
+├── README.md                 # Comprehensive documentation
+├── requirements.txt          # Python dependencies
+├── .gitignore               # Git ignore rules
+└── lms_backend/             # Django project
+    ├── manage.py
+    ├── lms_project/         # Django settings
+    ├── users/              # User management
+    ├── courses/            # Course management
+    ├── lectures/           # Lecture content
+    ├── quizzes/            # Quiz system
+    ├── enrollments/        # Student enrollments
+    ├── progress/           # Progress tracking
+    ├── templates/          # HTML templates
+    ├── static/             # CSS, JS files
+    └── media/              # Uploaded files
+
 📌 Overview
 
 A full-stack web application designed as part of an SDE Intern Assignment.
