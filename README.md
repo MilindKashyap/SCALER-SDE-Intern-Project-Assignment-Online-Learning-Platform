@@ -11,10 +11,10 @@ This Learning Management System (LMS) is a full-featured web application that en
 - **Course Management**: Create, edit, and publish courses with sequential content
 - **Lecture Types**: Support for reading materials (text, URLs, file uploads) and interactive quizzes
 - **Progress Tracking**: Real-time progress monitoring with completion status
-- **Quiz System**: Multiple-choice questions with automatic grading (70% pass threshold)
+- **Quiz System**: Multiple-choice questions with manual grading by teacher
 - **Responsive Design**: Mobile-first approach with Bootstrap 5
 - **Search Functionality**: Course search by title, description, or instructor
-- **File Upload**: Support for PDFs, images, and other educational materials
+- **File Upload**: Support for PDFs and other educational materials
 
 ## 🚀 Quick Start
 
