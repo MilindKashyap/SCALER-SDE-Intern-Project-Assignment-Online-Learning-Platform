@@ -1,4 +1,4 @@
-# Learning Management System (LMS)
+# Mini-LMS- Learning Management System
 
 A comprehensive Learning Management System built with Django and Django REST Framework, featuring user authentication, course management, interactive quizzes, and responsive design.
 
@@ -230,6 +230,6 @@ For support and questions:
 
 ---
 
-**Built with ❤️ using Django and Bootstrap 5**
+**Built with ❤️ by Milind Kashyap**
 
 *This Learning Management System demonstrates modern web development practices with a focus on user experience, security, and scalability.*
