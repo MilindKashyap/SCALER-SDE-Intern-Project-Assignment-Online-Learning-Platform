@@ -16,6 +16,45 @@ This Learning Management System (LMS) is a full-featured web application that en
 - **Search Functionality**: Course search by title, description, or instructor
 - **File Upload**: Support for PDFs and other educational materials
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="1 (1).png" width="250" />
+  <img src="1 (2).png" width="250" />
+  <img src="1 (3).png" width="250" />
+</p>
+
+<p align="center">
+  <img src="1 (4).png" width="250" />
+  <img src="1 (5).png" width="250" />
+  <img src="1 (6).png" width="250" />
+</p>
+
+<p align="center">
+  <img src="1 (7).png" width="250" />
+  <img src="1 (8).png" width="250" />
+  <img src="1 (9).png" width="250" />
+</p>
+
+<p align="center">
+  <img src="1 (10).png" width="250" />
+  <img src="1 (11).png" width="250" />
+  <img src="1 (12).png" width="250" />
+</p>
+
+<p align="center">
+  <img src="1 (13).png" width="250" />
+  <img src="1 (14).png" width="250" />
+  <img src="1 (15).png" width="250" />
+</p>
+
+<p align="center">
+  <img src="1 (16).png" width="250" />
+  <img src="1 (17).png" width="250" />
+  <img src="1 (18).png" width="250" />
+</p>
+
+
 ## 🚀 Quick Start
 
 ### Prerequisites
