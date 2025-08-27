@@ -140,6 +140,7 @@ def course_create_view(request):
         form = CourseForm()
     return render(request, 'courses/instructor/course_new.html', {'form': form})
 
+
 def course_manage_view(request, pk):
     course = get_object_or_404(Course, pk=pk, instructor=request.user)
 
@@ -180,7 +181,6 @@ def course_manage_view(request, pk):
                     
                     messages.success(request, 'Lecture added successfully!')
                     return redirect('instructor_course_manage', pk=course.pk)
-                    
                 except Exception as e:
                     messages.error(request, f'Error adding lecture: {str(e)}')
         
@@ -207,7 +207,6 @@ def course_manage_view(request, pk):
                     # Parse datetime strings to datetime objects
                     from datetime import datetime
                     from django.utils import timezone
-                    import pytz
                     
                     # Parse the datetime strings and make them timezone-aware
                     start_date = datetime.fromisoformat(quiz_start_date.replace('T', ' '))
@@ -265,7 +264,6 @@ def course_manage_view(request, pk):
                     
                     messages.success(request, 'Quiz created successfully!')
                     return redirect('instructor_course_manage', pk=course.pk)
-                    
                 except Exception as e:
                     print(f"DEBUG: Error creating quiz: {str(e)}")
                     messages.error(request, f'Error creating quiz: {str(e)}')
@@ -290,3 +288,295 @@ def delete_course_view(request, pk):
         messages.success(request, 'Course deleted successfully!')
         return redirect('instructor_dashboard') # Redirect to instructor dashboard or course list
     return redirect('instructor_course_manage', pk=pk) # Redirect back if not a POST request
+
+        return redirect('/auth/login')
+
+
+
+    lectures = Lecture.objects.filter(course=course).order_by('order_index')
+
+    quizzes = QuizLecture.objects.filter(lecture__course=course).order_by('lecture__order_index')
+
+
+
+    if request.method == 'POST':
+
+        action = request.POST.get('action')
+
+        
+
+        if action == 'add_lecture':
+
+            # Handle lecture creation
+
+            lecture_title = request.POST.get('lecture_title')
+
+            lecture_description = request.POST.get('lecture_description', '')
+
+            lecture_file = request.FILES.get('lecture_file')
+
+            
+
+            if not lecture_title or not lecture_file:
+
+                messages.error(request, 'Lecture title and PDF file are required.')
+
+            else:
+
+                try:
+
+                    # Create lecture
+
+                    latest_order_index = Lecture.objects.filter(course=course).aggregate(models.Max('order_index'))['order_index__max'] or 0
+
+                    lecture = Lecture.objects.create(
+
+                        course=course,
+
+                        title=lecture_title,
+
+                        type='PDF',
+
+                        order_index=latest_order_index + 1
+
+                    )
+
+                    
+
+                    # Create reading lecture with file
+
+                    reading_lecture = ReadingLecture.objects.create(
+
+                        lecture=lecture,
+
+                        file=lecture_file
+
+                    )
+
+                    
+
+            messages.success(request, 'Lecture added successfully!')
+
+            return redirect('instructor_course_manage', pk=course.pk)
+
+                    
+
+                except Exception as e:
+
+                    messages.error(request, f'Error adding lecture: {str(e)}')
+
+        
+
+        elif action == 'add_quiz':
+
+            # Handle quiz creation with questions in one step
+
+            quiz_title = request.POST.get('quiz_title')
+
+            quiz_description = request.POST.get('quiz_description', '')
+
+            quiz_start_date = request.POST.get('quiz_start_date')
+
+            quiz_end_date = request.POST.get('quiz_end_date')
+
+            quiz_duration = request.POST.get('quiz_duration')
+
+            quiz_questions_count = request.POST.get('quiz_questions_count')
+
+            
+
+            print(f"DEBUG: Quiz creation data:")
+
+            print(f"Title: {quiz_title}")
+
+            print(f"Start Date: {quiz_start_date}")
+
+            print(f"End Date: {quiz_end_date}")
+
+            print(f"Duration: {quiz_duration}")
+
+            print(f"Questions Count: {quiz_questions_count}")
+
+            
+
+            if not all([quiz_title, quiz_start_date, quiz_end_date, quiz_duration, quiz_questions_count]):
+
+                messages.error(request, 'All quiz fields are required.')
+
+        else:
+
+                try:
+
+                    # Parse datetime strings to datetime objects
+
+                    from datetime import datetime
+
+                    from django.utils import timezone
+
+                    import pytz
+
+                    
+
+                    # Parse the datetime strings and make them timezone-aware
+
+                    start_date = datetime.fromisoformat(quiz_start_date.replace('T', ' '))
+
+                    end_date = datetime.fromisoformat(quiz_end_date.replace('T', ' '))
+
+                    
+
+                    # Make them timezone-aware
+
+                    start_date = timezone.make_aware(start_date)
+
+                    end_date = timezone.make_aware(end_date)
+
+                    
+
+                    # Create lecture for quiz
+
+                    latest_order_index = Lecture.objects.filter(course=course).aggregate(models.Max('order_index'))['order_index__max'] or 0
+
+                    lecture = Lecture.objects.create(
+
+                        course=course,
+
+                        title=quiz_title,
+
+                        type='QUIZ',
+
+                        order_index=latest_order_index + 1
+
+                    )
+
+                    
+
+                    # Create quiz lecture with time constraints
+
+                    quiz_lecture = QuizLecture.objects.create(
+
+                        lecture=lecture,
+
+                        start_date=start_date,
+
+                        end_date=end_date,
+
+                        duration=int(quiz_duration)
+
+                    )
+
+                    
+
+                    print(f"DEBUG: Quiz lecture created with ID: {quiz_lecture.pk}")
+
+                    
+
+                    # Process questions
+
+                    question_count = 0
+
+                    while f'question_{question_count}_text' in request.POST:
+
+                        question_text = request.POST.get(f'question_{question_count}_text')
+
+                        options = [
+
+                            request.POST.get(f'question_{question_count}_option_0'),
+
+                            request.POST.get(f'question_{question_count}_option_1'),
+
+                            request.POST.get(f'question_{question_count}_option_2'),
+
+                            request.POST.get(f'question_{question_count}_option_3')
+
+                        ]
+
+                        correct_index = request.POST.get(f'question_{question_count}_correct')
+
+                        
+
+                        print(f"DEBUG: Question {question_count}: {question_text}")
+
+                        print(f"DEBUG: Options: {options}")
+
+                        print(f"DEBUG: Correct: {correct_index}")
+
+                        
+
+                        if question_text and all(options) and correct_index is not None:
+
+                            Question.objects.create(
+
+                                quiz=quiz_lecture,
+
+                                text=question_text,
+
+                                options=options,
+
+                                correct_index=int(correct_index)
+
+                            )
+
+                            print(f"DEBUG: Question {question_count} created successfully")
+
+                        
+
+                        question_count += 1
+
+                    
+
+                    messages.success(request, 'Quiz created successfully!')
+
+                    return redirect('instructor_course_manage', pk=course.pk)
+
+                    
+
+                except Exception as e:
+
+                    print(f"DEBUG: Error creating quiz: {str(e)}")
+
+                    messages.error(request, f'Error creating quiz: {str(e)}')
+
+        
+
+        elif action == 'save_quiz':
+
+            # This action is no longer needed as we handle everything in add_quiz
+
+            messages.error(request, 'Invalid action.')
+
+
+
+    context = {
+
+        'course': course,
+
+        'lectures': lectures,
+
+        'quizzes': quizzes,
+
+    }
+
+    return render(request, 'courses/instructor/course_manage.html', context)
+
+
+
+@login_required
+
+@instructor_required
+
+def delete_course_view(request, pk):
+
+    course = get_object_or_404(Course, pk=pk, instructor=request.user)
+
+    if request.method == 'POST':
+
+        course.delete()
+
+        messages.success(request, 'Course deleted successfully!')
+
+        return redirect('instructor_dashboard') # Redirect to instructor dashboard or course list
+
+    return redirect('instructor_course_manage', pk=pk) # Redirect back if not a POST request
+
+
